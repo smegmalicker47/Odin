@@ -302,6 +302,14 @@ object GhostBlocks : Module(
             BlockPos(54, 63, 73),
             BlockPos(54, 64, 74),
             BlockPos(54, 63, 74)
+            BlockPos(54, 64, 81,
+            BlockPos(54, 64, 82),
+            BlockPos(54, 64, 83),
+            BlockPos(54, 64, 84),
+            BlockPos(54, 64, 85),
+            BlockPos(54, 63, 83),
+            BlockPos(54, 63, 84),
+            BlockPos(54, 63, 85)
         )
     )
 
