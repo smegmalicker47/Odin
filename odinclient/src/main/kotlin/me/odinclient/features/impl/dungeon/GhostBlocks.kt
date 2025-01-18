@@ -274,7 +274,13 @@ object GhostBlocks : Module(
             BlockPos(101, 167, 47),
             BlockPos(101, 166, 47),
             BlockPos(101, 167, 46),
-            BlockPos(101, 166, 46)
+            BlockPos(101, 166, 46),
+            BlockPos(96, 120, 121),
+            BlockPos(96, 120, 122),
+            BlockPos(96, 121, 122),
+            BlockPos(19, 120, 128),
+            BlockPos(18, 120, 128),
+            BlockPos(18, 121, 128)
         ),
         3 to arrayOf(
             BlockPos(51, 114, 52),
@@ -312,15 +318,7 @@ object GhostBlocks : Module(
             BlockPos(54, 63, 84),
             BlockPos(54, 63, 85)
          ),   
-            //pd ghost blocks:
-         5 to arrayOf(   
-            BlockPos(96, 120, 121),
-            BlockPos(96, 120, 122),
-            BlockPos(96, 121, 122),
-            BlockPos(19, 120, 128),
-            BlockPos(18, 120, 128),
-            BlockPos(18, 121, 128)
-         ),
+
         )
     )
 
