@@ -296,6 +296,7 @@ object GhostBlocks : Module(
             BlockPos(56, 112, 110),
             BlockPos(56, 111, 110)
         ),
+        // prerune ghost blocks
         4 to arrayOf(
             BlockPos(54, 64, 72),
             BlockPos(54, 64, 73),
@@ -310,6 +311,16 @@ object GhostBlocks : Module(
             BlockPos(54, 63, 83),
             BlockPos(54, 63, 84),
             BlockPos(54, 63, 85)
+         ),   
+            //pd ghost blocks:
+         5 to arrayOf(   
+            BlockPos(96, 120, 121),
+            BlockPos(96, 120, 122),
+            BlockPos(96, 121, 122),
+            BlockPos(19, 120, 128),
+            BlockPos(18, 120, 128),
+            BlockPos(18, 121, 128)
+         ),
         )
     )
 
@@ -318,5 +329,3 @@ object GhostBlocks : Module(
         this.onKeybind()
     }
 }
-
-// 96 120 121
