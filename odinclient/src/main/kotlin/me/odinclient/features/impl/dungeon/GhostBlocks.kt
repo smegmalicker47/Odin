@@ -7,16 +7,13 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.addRange
+import me.odinmain.utils.rangeAdd
 import me.odinmain.utils.runIn
-import me.odinmain.utils.skyblock.LocationUtils
+import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.WITHER_ESSENCE_ID
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getF7Phase
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
-import me.odinmain.utils.skyblock.getBlockAt
-import me.odinmain.utils.skyblock.getItemSlot
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.block.state.IBlockState
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.init.Blocks
@@ -32,7 +29,7 @@ import org.lwjgl.input.Keyboard
 
 object GhostBlocks : Module(
     name = "Ghost Blocks",
-    description = "Creates ghost blocks by key, tools, swap stonk, stonk delay and pre configured.",
+    description = "Creates ghost blocks on key press, and in specific locations.",
     category = Category.DUNGEON,
     key = null,
 ) {
@@ -46,6 +43,7 @@ object GhostBlocks : Module(
 
     // pre blocks
     private val preGhostBlock by BooleanSetting("F7 Ghost blocks", false, description = "Will adjust specific blocks in the boss room.")
+    private val pdGhostBlocks by BooleanSetting("F7/M7 PD Ghost blocks", false, description = "Helps with gate alignment. Use with H-clip probably. Diable if you have no idea what this is.")
 
     // ghost pickaxe
     private val ghostPickDropDown by DropdownSetting("Ghost Tools Dropdown", false)
@@ -106,8 +104,12 @@ object GhostBlocks : Module(
             for (i in glass[phase] ?: return@execute) {
                 mc.theWorld?.setBlockState(i, Blocks.stained_glass.defaultState)
             }
-        }
-
+    
+            if (!DungeonUtils.isFloor(7) || !DungeonUtils.inBoss || !pdGhostBlocks || !enabled) return @execute
+            for (i in acaciaFence[phase] ?: return@execute) {
+                mc.theWorld?.setBlockState(i, Blocks.acacia_fence.defaultState)
+            }
+            
         onWorldLoad {
             sdBlocks.clear()
         }
@@ -131,7 +133,6 @@ object GhostBlocks : Module(
 
     private fun BlockData.reset() = mc.theWorld?.setBlockState(pos, state)
 
-    @JvmStatic
     fun breakBlock(pos: BlockPos) {
         if (!stonkDelayToggle || (sdOnlySB && !LocationUtils.isInSkyblock)) return
         sdBlocks.add(BlockData(pos, mc.theWorld.getBlockState(pos), System.currentTimeMillis(), false))
@@ -139,9 +140,9 @@ object GhostBlocks : Module(
 
     @SubscribeEvent
     fun onBlockChange(event: BlockChangeEvent) {
-        if (event.updated == Blocks.air.defaultState || !stonkDelayToggle || (sdOnlySB && !LocationUtils.isInSkyblock)) return
+        if (event.update == Blocks.air.defaultState || !stonkDelayToggle || (sdOnlySB && !LocationUtils.isInSkyblock)) return
         sdBlocks.find { event.pos == it.pos }?.let {
-            it.state = event.updated
+            it.state = event.update
             it.serverReplaced = true
             event.isCanceled = true
         }
@@ -170,13 +171,14 @@ object GhostBlocks : Module(
     fun postChunkData(packet: S21PacketChunkData) {
         if (!enabled || !stonkDelayToggle || (sdOnlySB && !LocationUtils.isInSkyblock)) return
         sdBlocks.forEach {
-            if (it.pos.x in (packet.chunkX shl 4).addRange(15) && it.pos.z in (packet.chunkZ shl 4).addRange(15)) {
+            if (it.pos.x in (packet.chunkX shl 4).rangeAdd(15) && it.pos.z in (packet.chunkZ shl 4).rangeAdd(15)) {
                 mc.theWorld?.setBlockState(it.pos, Blocks.air.defaultState)
                 it.serverReplaced = true
                 it.state = mc.theWorld.getBlockState(it.pos)
             }
         }
     }
+
 
     // TODO: MAKE THIS JSON PLS ITS SO BAD
     private val enderChests = mapOf(
@@ -205,6 +207,15 @@ object GhostBlocks : Module(
         3 to arrayOf(
             BlockPos(55, 114, 110),
             BlockPos(55, 114, 111)
+        )
+    )
+
+    private val acaciaFence = mapOf(
+        1 to arrayOf(
+            BlockPos(96, 121, 121),
+            BlockPos(96, 122, 121),
+            BlockPos(19, 121, 128),
+            BlockPos(19, 122, 128)
         )
     )
 
@@ -277,7 +288,13 @@ object GhostBlocks : Module(
             BlockPos(101, 167, 47),
             BlockPos(101, 166, 47),
             BlockPos(101, 167, 46),
-            BlockPos(101, 166, 46)
+            BlockPos(101, 166, 46),
+            BlockPos(96, 120, 121),
+            BlockPos(96, 120, 122),
+            BlockPos(96, 121, 122),
+            BlockPos(19, 120, 128),
+            BlockPos(18, 120, 128),
+            BlockPos(18, 121, 128)
         ),
         3 to arrayOf(
             BlockPos(51, 114, 52),
@@ -299,12 +316,23 @@ object GhostBlocks : Module(
             BlockPos(56, 112, 110),
             BlockPos(56, 111, 110)
         ),
+        // prerune ghost blocks
         4 to arrayOf(
             BlockPos(54, 64, 72),
             BlockPos(54, 64, 73),
             BlockPos(54, 63, 73),
             BlockPos(54, 64, 74),
             BlockPos(54, 63, 74)
+            BlockPos(54, 64, 81,
+            BlockPos(54, 64, 82),
+            BlockPos(54, 64, 83),
+            BlockPos(54, 64, 84),
+            BlockPos(54, 64, 85),
+            BlockPos(54, 63, 83),
+            BlockPos(54, 63, 84),
+            BlockPos(54, 63, 85)
+         ),   
+
         )
     )
 
